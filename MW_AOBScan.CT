@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="34">
+  <Forms>
+    <UDF1 Class="TCEForm" Encoding="Ascii85">b//5w!ax*U?S#)vpd:dIuyp5A5ZFVtN]k;a!KEp73KPpr)?rs7KriA@j2Cg=35.8Z@3mG9=*vfO_9dYp@MesG=}HTJ*UOQgFVyj,QCIuK5x7[:-4HsP3.d0,$vtISyr.I9/6ordmM17?rKtQscPU_FSG;P_-xi}=%/hIla8}JB0qNL234,K[DjPznMM7mGe8oayi8f#_]SD3RS+Z^4kLc@3X-x.dO=)9/Nj(aMK/g{Pt!j5jHA3W/RC+zqUfw;]L8F(74ju2Bh)4cjHWHQy/Ef4#a2J=j6[9O!EX{e/j%QG2kAzRzOjuKw/hYHLi$V8deMCN$e:vSUSvg*4hpJ#]6B-7.1DQ3*yX8wVB!S0SKuq3aOL@kB_B@FRGc^EaY?h].?BuVX-RvS4t5cYRwo,(bMB5/x2B4;om*Jk*;*Z[(Y,_[}k#}2/pK{@%ry9{Z4fz8</UDF1>
+  </Forms>
+  <Files>
+    <CWTable1.FRM Encoding="Ascii85">P0w9Vf:}d*al38nI}/O)943V3LIn^4)a32If!4$w3GtMk.^/$)[1)+x+4=xH[gwsLuL:cOJ#9DO5bYC8i2[Cb9*gI3@c_B{fmyn$N;J[GT,4mB-x=?IzZ)E}X7oj%Z%}pb)9z9Hguwj!X-SB(*PS9^GkD4yX0vO56*{Ej]x*o4qmm}2wIH99o%@z8O]g%oF*kq^/MQ#*m0aF%(Rt}Dw!5yVwTU/U=AZ,}s:xKqh*i2LRg$6?tJ.9UW3s7!cky]IL;9Ai:A*He:4Q3^v;bAEZ4$KH+nchG2{_{6,QKnE@zu]g?h4uDr_R=IqrzCy!pK-%TLgLU?tn%S#dZ-3_HwZ</CWTable1.FRM>
+  </Files>
+  <UserdefinedSymbols/>
+  <LuaScript>--[[ SETUP ]]--
+getAutoAttachList().add("ModernWarfare.exe")
+function AOBScanAA(script, symbol)
+  local success,disableInfo = autoAssemble(script)
+  if not success then return nil, disableInfo end -- disableInfo is error message on failure
+  local addr = getAddress(symbol)
+  autoAssemble(script, disableInfo) -- disable script and unregister symbol
+  return addr, 'success'
+end
+
+function AOBScanRegion(bytestr, start, stop)
+  local script = ([[
+  [ENABLE]
+  aobscanregion(luaAOBScanRegionSymbol,%X,%X,%s)
+  registersymbol(luaAOBScanRegionSymbol)
+  [DISABLE]
+  unregistersymbol(luaAOBScanRegionSymbol)
+  ]]):format(getAddress(start), getAddress(stop), bytestr)
+  return AOBScanAA(script, 'luaAOBScanRegionSymbol')
+end
+
+function AOBScanModule(bytestr, module)
+  local script = ([[
+  [ENABLE]
+  aobscanmodule(luaAOBScanModuleSymbol,%s,%s)
+  registersymbol(luaAOBScanModuleSymbol)
+  [DISABLE]
+  unregistersymbol(luaAOBScanModuleSymbol)
+  ]]):format(module, bytestr)
+  return AOBScanAA(script,'luaAOBScanModuleSymbol')
+end
+--[[ TESTING ]]--
+
+-- Tutorial step 1 load
+--local addr,msg = AOBScanRegion('8B 83 80040000', 0x00423000, 0x00424000)
+
+
+
+
+function UDF1_BaseAdressClick(sender)
+
+local addr,msg = AOBScanModule('4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00', process)
+if addr then
+  print(('0x%X'):format(addr))
+else
+  print(msg)
+end
+
+end
+
+function UDF1_UAVClick(sender)
+
+local addr,msg = AOBScanModule('4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00', process)
+local addr1,msg = AOBScanModule('08 A9 ?? ?? ?? ?? ?? 01 00 00 00 00 00 00 00 00', process)
+
+if addr then
+  print(('0x%X'):format(addr1 - addr - 24))
+else
+  print(msg)
+end
+
+end
+
+
+function UDF1_CEButton1Click(sender)
+
+local addr,msg = AOBScanModule('4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00', process)
+local addr1,msg = AOBScanModule('E8 ? ? ? ? 83 F8 02 0F 84 ? ? ? ? 48 89', process)
+
+if addr then
+  print(('0x%X'):format(addr1 - addr))
+else
+  print(msg)
+end
+
+end
+
+function UDF1_CEButton2Click(sender)
+
+local addr,msg = AOBScanModule('4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00', process)
+local addr1,msg = AOBScanModule('E8 ? ? ? ? 48 8B 8C 24 ? ? ? ? E8 ? ? ? ? 44', process)
+
+if addr then
+  print(('0x%X'):format(addr1 - addr))
+else
+  print(msg)
+end
+
+end
+
+function UDF1_CEButton6Click(sender)
+
+local addr,msg = AOBScanModule('4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00', process)
+local addr1,msg = AOBScanModule('E8 ? ? ? ? 48 8D 4B 02 FF', process)
+
+if addr then
+  print(('0x%X'):format(addr1 - addr))
+else
+  print(msg)
+end
+
+end
+
+function UDF1_CEButton4Click(sender)
+
+local addr,msg = AOBScanModule('4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00', process)
+local addr1,msg = AOBScanModule('83 7C 24 ? ? 74 1B 83 7C 24 ? ? 0F 84', process)
+
+if addr then
+  print(('0x%X'):format(addr1 - addr))
+else
+  print(msg)
+end
+
+end
+
+function UDF1_CEButton5Click(sender)
+
+local addr,msg = AOBScanModule('4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00', process)
+local addr1,msg = AOBScanModule('E8 ? ? ? ? 48 89 44 24 ? 41 B9 ? ? ? ? 44', process)
+
+if addr then
+  print(('0x%X'):format(addr1 - addr))
+else
+  print(msg)
+end
+
+end
+
+</LuaScript>
+</CheatTable>
